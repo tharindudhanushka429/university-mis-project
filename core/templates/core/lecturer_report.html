@@ -1,0 +1,54 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Lecturer Report{% endblock %}
+
+{% block content %}
+    <h1>Lecturer Report</h1>
+    <p>Select a lecturer to see the courses they teach.</p>
+
+    <form method="GET" action="{% url 'lecturer-report-search' %}">
+        <label for="lecturer_query">Select Lecturer:</label>
+        
+        <select id="lecturer_query" name="lecturer_query" onchange="this.form.submit()">
+            <option value="">-- Select a Lecturer --</option>
+            {% for lecturer in all_lecturers_list %}
+                <option value="{{ lecturer.id }}" 
+                        {% if lecturer_found.id == lecturer.id %}selected{% endif %}>
+                    {{ lecturer.name }}
+                </option>
+            {% endfor %}
+        </select>
+        
+        </form>
+
+    <hr style="margin-top: 30px;">
+
+    {% if lecturer_found %}
+        <h2>Courses Taught by: {{ lecturer_found.name }}</h2>
+        
+        {% if courses_taught_list %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in courses_taught_list %}
+                    <tr>
+                        <td>{{ course.code }}</td>
+                        <td>{{ course.name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>{{ lecturer_found.name }} is not assigned to any courses yet.</p>
+        {% endif %}
+
+    {% elif error_message %}
+        <p class="error">{{ error_message }}</p>
+    {% endif %}
+
+{% endblock %}

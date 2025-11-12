@@ -1,0 +1,144 @@
+{% extends 'core/base.html' %}
+
+{% block title %}My Dashboard{% endblock %}
+
+{% block content %}
+    <h1>Welcome, {{ student.name }}</h1>
+    <p>This is your personal dashboard. You can view your grades, GPA, and attendance here.</p>
+    
+    <div style="background: #eef; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <h3>Academic Summary</h3>
+        <table style="width: auto;">
+            <tr>
+                <td style="border: none; padding: 5px 15px 5px 0;"><strong>Semester 1 SGPA:</strong></td>
+                <td style="border: none; padding: 5px;"><strong>{{ sgpa_s1 }}</strong></td>
+            </tr>
+            <tr>
+                <td style="border: none; padding: 5px 15px 5px 0;"><strong>Semester 2 SGPA:</strong></td>
+                <td style="border: none; padding: 5px;"><strong>{{ sgpa_s2 }}</strong></td>
+            </tr>
+            <tr>
+                <td style="border: none; padding: 5px 15px 5px 0;"><strong>Cumulative GPA (CGPA):</strong></td>
+                <td style="border: none; padding: 5px;"><strong>{{ cgpa }}</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    <p>
+        If your grades seem out of date, click here to recalculate:
+        <a href="{% url 'trigger-calculations' %}" class="button">Calculate My Final Marks</a>
+    </p>
+
+    <hr>
+
+    <h3>My Enrolled Courses & Grades</h3>
+    
+    {% if enrollments_list %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Semester</th>
+                    <th>Course Code</th>
+                    <th>Course Name</th>
+                    <th>Final Mark (100)</th>
+                    <th>Final Grade</th>
+                    <th>Grade Point (GP)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for enrollment in enrollments_list %}
+                <tr>
+                    <td>{{ enrollment.course.semester }}</td>
+                    <td>{{ enrollment.course.code }}</td>
+                    <td>{{ enrollment.course.name }}</td>
+                    
+                    {% if enrollment.final_mark %}
+                        <td>{{ enrollment.final_mark }}</td>
+                        <td><strong>{{ enrollment.final_grade }}</strong></td>
+                        <td>{{ enrollment.grade_point }}</td>
+                    {% else %}
+                        <td colspan="3" style="text-align: center; color: #888;">
+                            Pending - All marks not yet entered.
+                        </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You are not enrolled in any courses yet.</p>
+    {% endif %}
+
+    <hr style="margin-top: 30px;">
+
+    <h3>My Attendance Records</h3>
+    
+    {% if attendance_list %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Course Code</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in attendance_list %}
+                <tr>
+                    <td>{{ record.date }}</td>
+                    <td>{{ record.course.code }}</td>
+                    <td>
+                        {% if record.status == 'P' %}
+                            <span style="color: green; font-weight: bold;">Present</span>
+                        {% else %}
+                            <span style"color: red; font-weight: bold;">Absent</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No attendance records found for you yet.</p>
+    {% endif %}
+	
+	<hr style="margin-top: 30px;"> <h3>My Payables & Fees</h3>
+    
+    {% if payment_list %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount (Rs.)</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payment_list %}
+                <tr>
+                    <td>{{ payment.description }}</td>
+                    <td style="text-align: right;">{{ payment.amount|floatformat:2 }}</td>
+                    <td>
+                        {% if payment.due_date %}
+                            {{ payment.due_date }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if payment.status == 'Pending' %}
+                            <strong style="color: red;">{{ payment.status }}</strong>
+                        {% else %}
+                            <strong style="color: green;">{{ payment.status }}</strong>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No payables or fees recorded for you.</p>
+    {% endif %}
+
+{% endblock %}

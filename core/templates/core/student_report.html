@@ -1,0 +1,53 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Student Report{% endblock %}
+
+{% block content %}
+    <h1>Student Report Card Search</h1>
+    <p>Enter a Student ID to find their enrollment details and grades.</p>
+
+    <form method="GET" action="{% url 'student-report-search' %}">
+        <label for="student_id_query">Student ID:</label>
+        <input type="text" id="student_id_query" name="student_id_query" placeholder="e.g., S001">
+        <button type="submit">Search</button>
+    </form>
+
+    <hr style="margin-top: 30px;">
+
+    {% if student_found %}
+        <h2>Report for: {{ student_found.name }} ({{ student_found.student_id }})</h2>
+        
+        {% if enrollments_list %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Name</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enrollment in enrollments_list %}
+                    <tr>
+                        <td>{{ enrollment.course.code }}</td>
+                        <td>{{ enrollment.course.name }}</td>
+                        <td>
+                            {% if enrollment.grade %}
+                                {{ enrollment.grade }}
+                            {% else %}
+                                <span style="color: #888;">Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>{{ student_found.name }} is not enrolled in any courses yet.</p>
+        {% endif %}
+
+    {% elif error_message %}
+        <p class="error">{{ error_message }}</p>
+    {% endif %}
+
+{% endblock %}

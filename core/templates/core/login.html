@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <h1>Student Login</h1>
+    <p>Please enter your username and password to access your dashboard.</p>
+    <p>(If you are an Admin, please use the <a href="/admin/">Admin Panel</a>.)</p>
+
+    <hr>
+
+    {% if form.errors %}
+        <p class="error">Your username and password didn't match. Please try again.</p>
+    {% endif %}
+
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %} <table>
+            <tr>
+                <td>{{ form.username.label_tag }}</td>
+                <td>{{ form.username }}</td>
+            </tr>
+            <tr>
+                <td>{{ form.password.label_tag }}</td>
+                <td>{{ form.password }}</td>
+            </tr>
+        </table>
+        
+        <button type="submit">Login</button>
+        <input type="hidden" name="next" value="{% url 'student-dashboard' %}" />
+    </form>
+{% endblock %}
